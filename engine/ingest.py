@@ -297,15 +297,20 @@ def load(export_path, connections_path=None, crm_path=None):
             if toks:
                 idx[toks[0]].append(k)
         for c in crm:
+            # CRM URLs are sometimes truncated (".../in/jane-doe-03" for ".../in/jane-doe-03aa69104").
+            # Match exact URL, then a unique URL-prefix match, then name. Never invent a new person.
             k = norm_url(c.get("linkedin_url"))
-            targets = [k] if k else []
+            targets = []
+            if k and k in people:
+                targets = [k]
+            elif k:
+                pref = [p for p in people if p.startswith(k)]
+                targets = pref if len(pref) == 1 else []
             if not targets:
                 toks = name_key_tokens(c.get("name"))
                 targets = [p for p in idx.get(toks[0] if toks else "", []) if names_match(people[p]["name"], c.get("name"))]
             for t in targets[:1]:
                 people[t]["crm"] = {x: c.get(x, "") for x in ("tier", "vertical", "company", "role")}
-                if not people[t]["name"]:  # matched by URL only: take the CRM's name
-                    people[t]["name"] = c.get("name", "")
                 people[t]["sources"].add("crm")
 
     people.pop(me, None)
