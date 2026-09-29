@@ -13,7 +13,7 @@ The engine decides **who** gets **which** message. Cowork does only what a caref
 > 2. Work through `out/queue_<today>.json` in order, following "Per-message procedure" in COWORK.md. After each item, fill in its row in `inbox/results_<today>.csv` straight away, not in a batch at the end.
 > 3. Then do "Reply sweep" and write `inbox/replies_<today>.csv`.
 > 4. Run `python -m engine sync`, then `python -m engine report --html`, then `python -m engine export-crm`.
-> 5. Push the active funnel to the CRM: with the **VRX CRM – LinkedIn** connector (never the VR Express one), call `upsert_linkedin_prospects` with the contents of `out/crm_push.json`.
+> 5. Push the active funnel to the CRM: with the **VRX CRM – LinkedIn** connector (never the VR Express one), call `upsert_linkedin_prospects` with the contents of `out/crm_push.json`, in batches of at most 250 prospects per call. Check each response: report any `errors` to me, and do not retry a batch that returned partial success (the tool is idempotent, so the next day's push repairs it).
 > 6. Send me a 5-line summary: sent, skipped, replies by sentiment, meetings, and anything that needs me.
 > Stop immediately and tell me if LinkedIn shows any warning, CAPTCHA, verification, limit notice, or "unusual activity" message.
 
