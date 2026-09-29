@@ -304,6 +304,8 @@ def load(export_path, connections_path=None, crm_path=None):
                 targets = [p for p in idx.get(toks[0] if toks else "", []) if names_match(people[p]["name"], c.get("name"))]
             for t in targets[:1]:
                 people[t]["crm"] = {x: c.get(x, "") for x in ("tier", "vertical", "company", "role")}
+                if not people[t]["name"]:  # matched by URL only: take the CRM's name
+                    people[t]["name"] = c.get("name", "")
                 people[t]["sources"].add("crm")
 
     people.pop(me, None)
