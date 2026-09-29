@@ -1,0 +1,190 @@
+{
+  "_rules": [
+    "Variables: {first_name} {hook} {context} {proof} {offer} {sender}. {hook} is ONE true sentence Cowork writes from the live profile (role, post, company news) or empty.",
+    "Touch 1: under ~60 words, no links, one interest question (Gong Labs: interest CTAs ~2x meeting asks on cold outreach).",
+    "Touch 2: add value or proof. Touch 3: short, easy out, or a referral ask.",
+    "Variants a/b are A/B tested automatically (Thompson sampling on reply rate). Add c, d... to test more."
+  ],
+  "REACTIVATE": {
+    "bg": {
+      "1": {
+        "a": "Здравейте, {first_name}! {hook}{context} Оттогава доста неща се промениха при нас – сега правим и AI дигитални персони и агенти, освен XR. Бихте ли искали да ви покажа накратко какво е ново?",
+        "b": "Здравейте, {first_name}, отдавна не сме се чували. {hook}{context} Имам идея, която мисля, че пасва на това, по което работихме тогава. Интересно ли ви е да ви я изпратя в 3 изречения?"
+      },
+      "2": {
+        "a": "{first_name}, само за контекст: наскоро пуснахме {proof}. Ако темата е актуална за вас тази година, с удоволствие ще споделя какво се получи."
+      },
+      "3": {
+        "a": "Последно от мен, {first_name} – ако сега не е моментът, напълно разбирам. Има ли някой друг при вас, с когото е по-добре да говоря за {offer}?"
+      }
+    },
+    "en": {
+      "1": {
+        "a": "Hi {first_name}! {hook}{context} A lot has changed on our side since. We now build AI digital humans and agents, not only XR. Would you like a quick look at what's new?",
+        "b": "Hi {first_name}, it's been a while. {hook}{context} I have an idea that fits what we worked on back then. Want me to send it over in 3 sentences?"
+      },
+      "2": {
+        "a": "{first_name}, quick context: we recently shipped {proof}. If this is on your radar this year, happy to share what worked."
+      },
+      "3": {
+        "a": "Last one from me, {first_name}. If now isn't the time, totally fine. Is there someone else on your side I should talk to about {offer}?"
+      }
+    }
+  },
+  "WARM": {
+    "bg": {
+      "1": {
+        "a": "Здрасти, {first_name}! {hook}{context} Как вървят нещата при теб напоследък?",
+        "b": "Здрасти, {first_name}, сетих се за теб днес. {hook}{context} Върху какво работиш в момента?"
+      },
+      "2": {
+        "a": "Аз напоследък съм потънал в AI продукти – вече над 8 са на живо, плюс XR проектите във VR Express. Ако някога ти трябва нещо такова (или познаваш някого), винаги съм насреща."
+      },
+      "3": {
+        "a": "{first_name}, ако мога да помогна с нещо – интро, идея, обратна връзка – кажи. Радвам се, че се чухме."
+      }
+    },
+    "en": {
+      "1": {
+        "a": "Hey {first_name}! {hook}{context} How have things been on your end lately?",
+        "b": "Hey {first_name}, you came to mind today. {hook}{context} What are you working on these days?"
+      },
+      "2": {
+        "a": "I've been deep in AI products lately: 8+ live now, plus the XR work at VR Express. If you ever need something like that (or know someone who does), I'm around."
+      },
+      "3": {
+        "a": "{first_name}, if I can help with anything (an intro, an idea, feedback), just say. Good to reconnect."
+      }
+    }
+  },
+  "ICP": {
+    "bg": {
+      "1": {
+        "a": "Здравейте, {first_name}! {hook}Работя с екипи като вашия по {offer}. Питам директно: това тема ли е за вас през следващите месеци?",
+        "b": "Здравейте, {first_name}! {hook}Виждам, че отговаряте за области, в които правим {offer} – напр. {proof}. Струва ли си да ви изпратя 2-3 примера?"
+      },
+      "2": {
+        "a": "{first_name}, за контекст: {proof}. Мога да ви пратя кратко видео как изглежда, без ангажимент. Да го изпратя ли?"
+      },
+      "3": {
+        "a": "Няма да ви занимавам повече, {first_name}. Ако темата стане актуална, пишете ми. А ако някой колега е по-правилният човек, ще съм благодарен за насочване."
+      }
+    },
+    "en": {
+      "1": {
+        "a": "Hi {first_name}! {hook}I work with teams like yours on {offer}. Straight question: is this on your agenda for the coming months?",
+        "b": "Hi {first_name}! {hook}Your role overlaps with where we do {offer}, e.g. {proof}. Worth sending you 2-3 examples?"
+      },
+      "2": {
+        "a": "{first_name}, for context: {proof}. I can send a short video of how it looks, no strings. Want it?"
+      },
+      "3": {
+        "a": "I'll stop here, {first_name}. If it becomes relevant, just ping me. And if a colleague is the better person, I'd appreciate a pointer."
+      }
+    }
+  },
+  "BUILDER": {
+    "bg": {
+      "1": {
+        "a": "Здравейте, {first_name}! {hook}Последните месеци изграждам AI-native продукти – над 8 са на живо. Любопитен съм: има ли нещо в roadmap-а ви, което стои блокирано заради капацитет?",
+        "b": "Здравейте, {first_name}! {hook}Помагам на основатели да пуснат продукт или вътрешен инструмент за седмици с AI-native стек. Интересно ли ви е как изглежда това на практика?"
+      },
+      "2": {
+        "a": "{first_name}, за ориентир: от идея до работещ продукт при нас обикновено са 2-4 седмици, не месеци. Ако имате идея „за някой ден“, с радост ще дам бърза оценка какво е реалистично."
+      },
+      "3": {
+        "a": "Последно от мен, {first_name}. Ако познавате основател, който се бори с бавна разработка, ще съм благодарен за интро – и винаги връщам услугата."
+      }
+    },
+    "en": {
+      "1": {
+        "a": "Hi {first_name}! {hook}I've spent the last months building AI-native products, 8+ live now. Curious: is anything on your roadmap stuck for lack of capacity?",
+        "b": "Hi {first_name}! {hook}I help founders ship a product or internal tool in weeks with an AI-native stack. Interested in what that looks like in practice?"
+      },
+      "2": {
+        "a": "{first_name}, as a reference: idea to working product is usually 2-4 weeks for us, not months. If you have a 'someday' idea, happy to give a quick reality check."
+      },
+      "3": {
+        "a": "Last one from me, {first_name}. If you know a founder fighting slow development, I'd value an intro, and I always return the favour."
+      }
+    }
+  },
+  "PARTNER": {
+    "bg": {
+      "1": {
+        "a": "Здравейте, {first_name}! {hook}Работим с агенции като white-label партньор за XR и AI продукция – вие държите клиента, ние изпълняваме. Отворени ли сте за такъв тип партньорства?",
+        "b": "Здравейте, {first_name}! {hook}Често агенции ни викат, когато клиент поиска VR/AR или AI персона, а няма кой да го направи вътрешно. Случва ли ви се?"
+      },
+      "2": {
+        "a": "{first_name}, за пример: {proof}. Партньорите ни получават партньорски цени и ние оставаме невидими за клиента. Да ви пратя кратко портфолио?"
+      },
+      "3": {
+        "a": "Благодаря за времето, {first_name}. Ако на някой бриф му трябва XR или AI компонент, пишете ми – обикновено можем да дадем оценка до 48 часа."
+      }
+    },
+    "en": {
+      "1": {
+        "a": "Hi {first_name}! {hook}We work with agencies as a white-label partner for XR and AI production: you keep the client, we deliver. Open to that kind of partnership?",
+        "b": "Hi {first_name}! {hook}Agencies often call us when a client asks for VR/AR or an AI persona and there's no one in-house to build it. Does that happen to you?"
+      },
+      "2": {
+        "a": "{first_name}, for example: {proof}. Partners get partner pricing and we stay invisible to the client. Want a short portfolio?"
+      },
+      "3": {
+        "a": "Thanks for your time, {first_name}. If a brief ever needs an XR or AI piece, ping me. We can usually quote within 48 hours."
+      }
+    }
+  },
+  "STUDENT": {
+    "bg": {
+      "1": {
+        "a": "Здрасти, {first_name}! {hook}Направих {offer}. Търся няколко души, които активно учат нови неща, да го пробват безплатно и да ми кажат честно какво не става. Би ли пробвал(а)?",
+        "b": "Здрасти, {first_name}! {hook}Бърз въпрос: как пазиш наученото от курсове, видеа и статии, за да го намериш после? Питам, защото строя инструмент точно за това."
+      },
+      "2": {
+        "a": "{first_name}, ако ти е интересно, мога да ти дам ранен достъп. Търсим и хора за стажове и проекти във VR Express и AI продуктите ни – ако това те вълнува, пиши ми с какво се занимаваш."
+      },
+      "3": {
+        "a": "Последно от мен, {first_name} – ако познаваш колеги, които биха искали ранен достъп или стаж в AI/XR, ще се радвам да ги насочиш към мен. Успех!"
+      }
+    },
+    "en": {
+      "1": {
+        "a": "Hey {first_name}! {hook}I built {offer}. I'm looking for a few people who are actively learning to try it free and tell me honestly what doesn't work. Would you try it?",
+        "b": "Hey {first_name}! {hook}Quick question: how do you keep what you learn from courses, videos and articles so you can find it later? Asking because I'm building a tool for exactly that."
+      },
+      "2": {
+        "a": "{first_name}, if it sounds interesting I can give you early access. We're also looking for people for internships and projects at VR Express and our AI products. If that excites you, tell me what you're into."
+      },
+      "3": {
+        "a": "Last one from me, {first_name}. If you know people who'd want early access or an AI/XR internship, feel free to point them my way. Good luck!"
+      }
+    }
+  },
+  "NETWORK": {
+    "bg": {
+      "1": {
+        "a": "Здравейте, {first_name}! {hook}Не сме си писали досега, а сме свързани от известно време – реших да го поправя. Върху какво се фокусирате в момента?",
+        "b": "Здравейте, {first_name}! {hook}Правя кратък преглед на мрежата си и искам да знам по-добре с какво се занимават хората в нея. С какво мога да съм ви полезен?"
+      },
+      "2": {
+        "a": "{first_name}, накратко за мен: съосновател на VR Express (XR и AI дигитални персони за Postbank, Recordati, Zentiva) и строя AI продукти. Ако в мрежата ви някой търси подобно нещо, ще съм благодарен за насочване – и с радост връщам услугата."
+      },
+      "3": {
+        "a": "Благодаря, {first_name}! Ако някога мога да помогна с интро или идея – пишете."
+      }
+    },
+    "en": {
+      "1": {
+        "a": "Hi {first_name}! {hook}We've been connected a while but never actually talked, so I'm fixing that. What are you focused on these days?",
+        "b": "Hi {first_name}! {hook}I'm getting to know my network better. What's the best way I could be useful to you?"
+      },
+      "2": {
+        "a": "{first_name}, briefly about me: co-founder of VR Express (XR and AI digital humans for Postbank, Recordati, Zentiva), and I build AI products. If anyone in your network needs something like that, I'd value a pointer, and I'm happy to return the favour."
+      },
+      "3": {
+        "a": "Thanks, {first_name}! If I can ever help with an intro or an idea, just say."
+      }
+    }
+  }
+}

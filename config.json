@@ -1,0 +1,149 @@
+{
+  "sender": {
+    "first_name": "Ilian",
+    "first_name_bg": "Илиян",
+    "company": "VR Express",
+    "linkedin_url": "https://www.linkedin.com/in/illray-builds",
+    "family_surnames": [
+      "raykov",
+      "raykova",
+      "райков",
+      "райкова"
+    ]
+  },
+  "volume": {
+    "_why": "LinkedIn publishes no message cap for 1st-degree connections, and §8.2 of its User Agreement bans automated sending. Ramp up, keep jitter, and pause on any warning. See PLAYBOOK.md §7.",
+    "ramp": [
+      {
+        "from_day": 1,
+        "cap": 40
+      },
+      {
+        "from_day": 6,
+        "cap": 70
+      },
+      {
+        "from_day": 11,
+        "cap": 100
+      },
+      {
+        "from_day": 16,
+        "cap": 120
+      },
+      {
+        "from_day": 21,
+        "cap": 150
+      }
+    ],
+    "min_daily": 120,
+    "max_daily": 150,
+    "jitter": 0.08,
+    "send_weekdays": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "followup_share_max": 0.5,
+    "enrich_per_day": 0
+  },
+  "sequence": {
+    "_why": "3 touches. Backlinko (12M emails): one follow-up = +65.8% replies. More than 3 unanswered DMs reads as spam.",
+    "touch_offsets_days": [
+      0,
+      4,
+      10
+    ],
+    "cooldown_days": 21,
+    "nurture_after_days": 90,
+    "reply_window_days": 14
+  },
+  "track_mix": {
+    "_why": "Share of NEW first-touches per day. Unused share rolls over to the next track in this order.",
+    "REACTIVATE": 0.1,
+    "WARM": 0.15,
+    "ICP": 0.3,
+    "BUILDER": 0.12,
+    "PARTNER": 0.08,
+    "AUTO": 0.1,
+    "NETWORK": 0.05,
+    "STUDENT": 0.1
+  },
+  "scoring": {
+    "grade_a": 50,
+    "grade_b": 35,
+    "grade_c": 22,
+    "icp_fit_min": 18
+  },
+  "proof": {
+    "_note": "Only real, shareable references. Edit freely. Used as {proof} in templates.",
+    "pharma": {
+      "bg": "AI медицинския представител, който направихме за Recordati, и AR портала за Merck",
+      "en": "the AI medical rep we built for Recordati and the AR portal for Merck"
+    },
+    "banking": {
+      "bg": "VR онбординга и игрите за обучение, които правим за Postbank",
+      "en": "the VR onboarding and training games we run for Postbank"
+    },
+    "fmcg": {
+      "bg": "активациите ни за Coca-Cola HBC и JTI",
+      "en": "our activations for Coca-Cola HBC and JTI"
+    },
+    "telco": {
+      "bg": "VR онбординга ни за Postbank и 3D кариерния сайт за UniCredit",
+      "en": "our VR onboarding for Postbank and the 3D career site for UniCredit"
+    },
+    "retail": {
+      "bg": "3D конфигураторите и AR активациите ни (напр. Haleon Voltaren)",
+      "en": "our 3D configurators and AR activations (e.g. Haleon Voltaren)"
+    },
+    "default": {
+      "bg": "проектите ни за Postbank, Recordati и Zentiva",
+      "en": "our work for Postbank, Recordati and Zentiva"
+    }
+  },
+  "offers": {
+    "_note": "Next-best-offer per function/vertical, shown on the scoreboard and used as {offer}.",
+    "hr": {
+      "bg": "VR онбординг и обучения",
+      "en": "VR onboarding and training"
+    },
+    "marketing": {
+      "bg": "AR/3D активации и AI дигитални персони",
+      "en": "AR/3D activations and AI digital humans"
+    },
+    "events": {
+      "bg": "VR активации за събития",
+      "en": "VR activations for events"
+    },
+    "pharma": {
+      "bg": "AI медицински представител (V-Personas)",
+      "en": "an AI medical rep (V-Personas)"
+    },
+    "innovation": {
+      "bg": "AI агенти и XR пилоти",
+      "en": "AI agents and XR pilots"
+    },
+    "sales": {
+      "bg": "AI sales funnel и интерактивни брошури",
+      "en": "an AI sales funnel and interactive brochures"
+    },
+    "founder": {
+      "bg": "AI-native продукт за седмици, не месеци",
+      "en": "an AI-native product in weeks, not months"
+    },
+    "agency": {
+      "bg": "white-label XR/AI продукция за ваши клиенти",
+      "en": "white-label XR/AI production for your clients"
+    },
+    "student": {
+      "bg": "BrainTube – превръща видеата и статиите, от които учиш, в търсима база знания",
+      "en": "BrainTube, which turns the videos and articles you learn from into a searchable knowledge base"
+    },
+    "default": {
+      "bg": "AI и XR решения",
+      "en": "AI and XR solutions"
+    }
+  }
+}

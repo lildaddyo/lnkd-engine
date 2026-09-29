@@ -1,0 +1,11 @@
+# Personal data never goes to git. Only code, config and templates sync.
+data/*
+!data/README.md
+out/*
+!out/.gitkeep
+inbox/*
+!inbox/.gitkeep
+*.db
+*.db-journal
+__pycache__/
+*.zip
