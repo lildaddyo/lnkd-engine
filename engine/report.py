@@ -134,11 +134,34 @@ const f=b.dataset.f;document.querySelectorAll('#t tr[data-track]').forEach(r=>r.
 
 
 def export_crm(db):
-    """Contacts worth a CRM record (VRX CRM / any CRM import)."""
+    """Active funnel for the LinkedIn Engine CRM workspace (docs/CRM_WORKSPACE.md).
+
+    Rule: anyone who entered a sequence (stage != NEW) or is grade A/B.
+    Writes out/crm_push.json (payload for the MCP tool upsert_linkedin_prospects,
+    idempotent by linkedin_url) and out/crm_push.csv (same rows, for eyeballing).
+    """
     import csv
     p = path("out", "crm_push.csv")
-    rows = db.execute("SELECT * FROM contacts WHERE stage IN ('CONVERSATION','MEETING','PROPOSAL','WON') "
-                      "OR (grade='A' AND track IN ('REACTIVATE','ICP','PARTNER','BUILDER'))").fetchall()
+    rows = db.execute("SELECT * FROM contacts WHERE (stage NOT IN ('NEW','NOT_CONNECTED') OR grade IN ('A','B')) "
+                      "AND NOT (track='DNC' AND stage='NEW') ORDER BY score DESC").fetchall()
+    prospects = []
+    for r in rows:
+        feats = json.loads(r["features"] or "{}")
+        prospects.append({
+            "linkedin_url": full_url(r["key"]), "name": r["name"], "company": r["company"] or "",
+            "position": r["position"] or r["headline"] or "", "email": r["email"] or "",
+            "lead_score": r["score"] or 0,
+            "tags": [f"track:{(r['track'] or '').lower()}", f"grade:{r['grade']}",
+                     f"li-stage:{(r['stage'] or '').lower()}", f"lang:{r['lang'] or 'en'}"],
+            "li": {"score": r["score"], "rel": r["s_rel"], "intent": r["s_intent"], "fit": r["s_fit"],
+                   "timing": r["s_timing"], "track": r["track"], "grade": r["grade"], "stage": r["stage"],
+                   "touch": r["touch"], "variant": r["variant"], "next_due": r["next_due"],
+                   "last_touch_at": r["last_touch_at"], "next_action": r["next_action"],
+                   "reasons": r["reasons"], "vertical": r["vertical"], "function": r["function"],
+                   "seniority": r["seniority"], "connected_on": feats.get("connected_on")},
+        })
+    with open(path("out", "crm_push.json"), "w", encoding="utf-8") as fh:
+        json.dump({"prospects": prospects}, fh, ensure_ascii=False, indent=1)
     with open(p, "w", encoding="utf-8-sig", newline="") as fh:
         w = csv.writer(fh)
         w.writerow(["name", "linkedin_url", "company", "role", "email", "stage", "track", "score", "vertical", "tags", "notes"])

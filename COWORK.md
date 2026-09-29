@@ -12,7 +12,9 @@ The engine decides **who** gets **which** message. Cowork does only what a caref
 > 1. In the folder, run `python -m engine daily` (Windows: `py -m engine daily`). It syncs yesterday's results and writes today's queue.
 > 2. Work through `out/queue_<today>.json` in order, following "Per-message procedure" in COWORK.md. After each item, fill in its row in `inbox/results_<today>.csv` straight away, not in a batch at the end.
 > 3. Then do "Reply sweep" and write `inbox/replies_<today>.csv`.
-> 4. Run `python -m engine sync`, then `python -m engine report --html`, and send me a 5-line summary: sent, skipped, replies by sentiment, meetings, and anything that needs me.
+> 4. Run `python -m engine sync`, then `python -m engine report --html`, then `python -m engine export-crm`.
+> 5. Push the active funnel to the CRM: with the **VRX CRM – LinkedIn** connector (never the VR Express one), call `upsert_linkedin_prospects` with the contents of `out/crm_push.json`.
+> 6. Send me a 5-line summary: sent, skipped, replies by sentiment, meetings, and anything that needs me.
 > Stop immediately and tell me if LinkedIn shows any warning, CAPTCHA, verification, limit notice, or "unusual activity" message.
 
 ---
@@ -71,7 +73,7 @@ For each item in `out/queue_<date>.json`:
    - `next_step`: `meeting` if a call or meeting was agreed, `proposal` if they asked for an offer, otherwise empty.
    - `summary`: at most 15 words.
 3. For each **positive, neutral or referral** reply, draft a response into `out/reply_drafts_<date>.md`. It should be short, answer their question, and for positive replies move to a specific time: "Would Thursday 11:00 or Friday 15:00 work for 20 min?" (Gong Labs: once interest is shown, a specific-time ask more than doubles booked meetings.) **Do not send drafts.** Ilian approves them.
-4. With the VRX CRM connector: for positive or referral replies, create or update the contact (`create_linkedin_contact`, then `log_interaction`) and tag it `source:linkedin-engine`.
+4. With the **VRX CRM – LinkedIn** connector: for every reply, `log_interaction` (type `linkedin`, content is the summary, sentiment as classified) on that contact. The daily `upsert_linkedin_prospects` push has already created the contact. Never use the VR Express connector for this workflow.
 
 ## What the engine does with your rows
 
