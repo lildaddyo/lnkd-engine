@@ -13,11 +13,11 @@ The engine (this repo) is the **brain**. It scores all ~11.4k connections, plans
 | Phase | What | Status |
 |---|---|---|
 | 1a | `find_or_create_account` is workspace-aware; the contact trigger passes the contact's org; the 5 leaked BrainTube→VR Express links are repaired | done (commit e6feb9c) |
-| 1b | WorkspaceProvider plus a switcher in the sidebar; every insert carries `organization_id`; the sidebar no longer breaks when a user has 2+ memberships | in progress |
-| 1c | `crm-mcp`: `MCP_SERVER_TOKEN_LI` + `MCP_ORG_ID_LI`, label `LI` (mirrors BrainTube) | next |
-| 1d | Create the org "LinkedIn Engine" (`linkedin-engine`), owner membership, and entitlements for tiers 0–5 | next |
-| 2 | Per-workspace nav profile: `organizations.settings.nav_profile = 'linkedin'` → curated menu | planned |
-| 3 | LinkedIn views: Funnel dashboard, Scoreboard, Replies | planned |
+| 1b | WorkspaceProvider plus a switcher in the sidebar; every insert carries `organization_id`; the sidebar no longer breaks when a user has 2+ memberships | done (0d251fd, bda8f32) |
+| 1c | `crm-mcp`: `MCP_SERVER_TOKEN_LI` + `MCP_ORG_ID_LI`, label `LI` (mirrors BrainTube) | done (bda8f32); needs secrets |
+| 1d | Create the org "LinkedIn Engine" (`linkedin-engine`, id 22630c16-3de9-4e00-ad16-2975bac06d1f), owner membership, and entitlements for tiers 0–5 | done |
+| 2 | Per-workspace nav profile: `organizations.settings.nav_profile = 'linkedin'` → curated menu | done (d74f6e8) |
+| 3 | LinkedIn views: Funnel dashboard, Scoreboard, Replies; MCP `upsert_linkedin_prospects` (LI-only, keeps CRM DNC, returns `dnc`) | done (d4b8609, faa71d4, a70f9e1, 4bef6a5) |
 
 ## Who goes into the workspace (the "active funnel only" rule)
 
@@ -45,9 +45,9 @@ A **deal** is created when a contact reaches CONVERSATION. From then on the CRM 
 
 | Section | Views |
 |---|---|
-| Today | **LinkedIn Funnel** (new), Tasks, Calendar |
+| Today | **LinkedIn Funnel** (new home), **Replies** (new), Tasks, Calendar |
 | People | Contacts, Pipeline, **Scoreboard** (new) |
-| Conversations | **Replies** (new), LinkedIn |
+| Conversations | LinkedIn |
 | Assist | Agent Hub |
 | Setup | Import CSV, Settings, Users |
 
