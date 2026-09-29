@@ -16,7 +16,7 @@ The engine (this repo) is the **brain**. It scores all ~11.4k connections, plans
 | 1b | WorkspaceProvider plus a switcher in the sidebar; every insert carries `organization_id`; the sidebar no longer breaks when a user has 2+ memberships | done (0d251fd, bda8f32) |
 | 1c | `crm-mcp`: `MCP_SERVER_TOKEN_LI` + `MCP_ORG_ID_LI`, label `LI` (mirrors BrainTube) | done (bda8f32); needs secrets |
 | 1d | Create the org "LinkedIn Engine" (`linkedin-engine`, id 22630c16-3de9-4e00-ad16-2975bac06d1f), owner membership, and entitlements for tiers 0–5 | done |
-| 2 | Per-workspace nav profile: `organizations.settings.nav_profile = 'linkedin'` → curated menu | done (d74f6e8) |
+| 2 | Per-workspace nav profile: `organizations.nav_profile = 'linkedin'` → curated menu | done (d74f6e8) |
 | 3 | LinkedIn views: Funnel dashboard, Scoreboard, Replies; MCP `upsert_linkedin_prospects` (LI-only, keeps CRM DNC, returns `dnc`) | done (d4b8609, faa71d4, a70f9e1, 4bef6a5) |
 
 ## Who goes into the workspace (the "active funnel only" rule)
@@ -55,7 +55,7 @@ Everything else is hidden in this workspace, including ⌘K. VR Express is uncha
 
 ## New views (phase 3)
 
-- **LinkedIn Funnel:** KPI row (in sequence · replied · conversations · meetings · proposals · won); stage funnel; reply rate by track; sends in the last 14 days; opener A/B table.
+- **LinkedIn Funnel:** KPI row (in sequence · replied · conversations · meetings · proposals · won); stage funnel with step conversion; per-track table (people, in sequence, replied, reply rate, A-grades); "Hot, not yet contacted" and "Follow-ups due" lists. (Opener A/B results stay in the engine scoreboard for now.)
 - **Scoreboard:** sortable table with grade, score and the Relationship/Intent/Fit/Timing bars, track chips, "why", next best action, and a link to the LinkedIn profile. Filters by track, grade and stage.
 - **Replies:** contacts with a logged reply that isn't handled yet, showing sentiment, summary and the drafted response. Actions: Approve & mark sent, Edit, Create deal, Mark DNC.
 
