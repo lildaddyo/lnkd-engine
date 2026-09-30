@@ -51,3 +51,7 @@ Right now this lives in `sales-engine/` inside another repo. To split it into it
 git subtree split --prefix sales-engine -b sales-engine-only
 git push git@github.com:<you>/linkedin-sales-engine.git sales-engine-only:main
 ```
+
+## Setting up on another Claude account
+
+See [SETUP_NEW_ACCOUNT.md](SETUP_NEW_ACCOUNT.md).
