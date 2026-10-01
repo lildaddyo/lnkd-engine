@@ -20,7 +20,9 @@ CREATE TABLE IF NOT EXISTS contacts (
   next_due TEXT,                  -- ISO date the next touch is due
   last_touch_at TEXT,
   manual_track TEXT,              -- operator override
-  updated_at TEXT
+  updated_at TEXT,
+  segment TEXT, stream TEXT, stream2 TEXT, offer TEXT,   -- opportunity segment (engine/segments.py)
+  opp_score INTEGER, opp_tier TEXT, value TEXT
 );
 CREATE TABLE IF NOT EXISTS touches (
   id TEXT PRIMARY KEY,            -- <date>-<n>
@@ -45,7 +47,20 @@ def connect(path):
     db = sqlite3.connect(path)
     db.row_factory = sqlite3.Row
     db.executescript(SCHEMA)
+    _migrate(db)
     return db
+
+
+NEW_COLS = (("segment", "TEXT"), ("stream", "TEXT"), ("stream2", "TEXT"), ("offer", "TEXT"),
+            ("opp_score", "INTEGER"), ("opp_tier", "TEXT"), ("value", "TEXT"))
+
+
+def _migrate(db):
+    have = {r[1] for r in db.execute("PRAGMA table_info(contacts)")}
+    for name, typ in NEW_COLS:
+        if name not in have:
+            db.execute(f"ALTER TABLE contacts ADD COLUMN {name} {typ}")
+    db.commit()
 
 
 def meta_get(db, k, default=None):

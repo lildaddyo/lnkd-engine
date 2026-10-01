@@ -44,7 +44,7 @@ For each item in `out/queue_<date>.json`:
    - their company's visible news or product
    - otherwise, delete `{hook}` entirely.
    No flattery adjectives ("impressive", "amazing"), no "I came across your profile", no emojis.
-6. **Final read.** The message is natural, has no placeholders, and is the right length. Bulgarian messages use the formal "Вие" in ICP/REACTIVATE/PARTNER/BUILDER/NETWORK and the informal "ти" in WARM/STUDENT, as written.
+6. **Final read.** The message is natural, has no placeholders, and is the right length. Bulgarian messages use the formal "Вие" in ICP/REACTIVATE/PARTNER/BUILDER/INVESTOR/NETWORK and the informal "ти" in WARM/AIPEER/STUDENT, as written. INVESTOR and AIPEER are never a pitch: do not add offers or prices the template does not contain.
 7. **Send**, then fill in the row: `status=sent`, `sent_at` (ISO time), `chosen_track`, `lang`, and `final_message` (exactly what was sent).
 
 ### Track rules for AUTO (and for re-checks)
@@ -55,8 +55,10 @@ For each item in `out/queue_<date>.json`:
 | Works at an agency, studio or production company, or is a freelancer (creative, events, PR, media) | PARTNER |
 | HR, L&D, employer brand, marketing, brand, communications, events or innovation, at manager level or above | ICP |
 | C-level or director at a pharma, banking, FMCG, telco or retail company (any function) | ICP |
+| Investor, angel, VC or fund partner/principal/director (not their HR, finance or comms staff) | INVESTOR |
+| Founder, engineer or lead at a company that builds with AI, agents or automation | AIPEER |
 | Founder, owner or CEO of a small company or startup | BUILDER |
-| Anything else (engineers, sales ICs, recruiters, investors, public sector...) | NETWORK |
+| Anything else (engineers, sales ICs, recruiters, public sector...) | NETWORK |
 
 ### Result row columns (`inbox/results_<date>.csv`, prefilled with touch_id + profile_url)
 

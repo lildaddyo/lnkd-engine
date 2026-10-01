@@ -307,8 +307,17 @@ def load(export_path, connections_path=None, crm_path=None):
                 pref = [p for p in people if p.startswith(k)]
                 targets = pref if len(pref) == 1 else []
             if not targets:
+                # Name-only is weak evidence (common names, job changes). Trust it only when exactly one person
+                # with that name works at the CRM's company; everything else is queued for a human in crm_review.
                 toks = name_key_tokens(c.get("name"))
-                targets = [p for p in idx.get(toks[0] if toks else "", []) if names_match(people[p]["name"], c.get("name"))]
+                named = [p for p in idx.get(toks[0] if toks else "", []) if names_match(people[p]["name"], c.get("name"))]
+                sure = [p for p in named if _same_company(people[p].get("conn_company"), c.get("company"))]
+                if len(sure) == 1:
+                    targets = sure
+                else:
+                    for p in named:
+                        people[p].setdefault("crm_candidates", []).append(
+                            {x: c.get(x, "") for x in ("name", "company", "role", "tier")})
             for t in targets[:1]:
                 people[t]["crm"] = {x: c.get(x, "") for x in ("tier", "vertical", "company", "role")}
                 people[t]["sources"].add("crm")
@@ -326,6 +335,19 @@ def _glob_rows(ex, prefix):
         if b.startswith(prefix) and b.endswith(".csv"):
             return ex.rows(b)
     return []
+
+
+_CO_STOP = {"bulgaria", "bulgarian", "ltd", "eood", "ood", "ead", "ad", "gmbh", "inc", "llc", "group", "the", "and", "of",
+            "sofia", "bg", "communication", "communications", "agency", "company", "co"}
+
+
+def _co_tokens(s):
+    return {t for t in re.findall(r"[a-zа-я0-9]+", (s or "").lower()) if t not in _CO_STOP and len(t) > 1}
+
+
+def _same_company(a, b):
+    ta, tb = _co_tokens(a), _co_tokens(b)
+    return bool(ta and tb and (ta & tb))
 
 
 def _finalize(f):

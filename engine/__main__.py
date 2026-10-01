@@ -6,6 +6,8 @@
   report   [--html] [--json]                            -> funnel + out/scoreboard.html
   mark     <profile_url> [--stage S] [--track T] [--lang bg|en]
   export-crm                                            -> out/crm_push.csv
+  dashboard                                             -> out/dashboard.html + out/opportunities/*.csv
+  exclude  <name|profile_url> [--note why]              never contact (friends, family); survives re-imports
   daily    [--date]                                     sync + plan + report --html (what Cowork runs)
 """
 import argparse
@@ -13,7 +15,7 @@ import os
 import sys
 from datetime import date
 
-from . import core, report
+from . import core, dashboard, report
 
 
 def main(argv=None):
@@ -39,6 +41,10 @@ def main(argv=None):
     p.add_argument("--track")
     p.add_argument("--lang")
     sub.add_parser("export-crm")
+    sub.add_parser("dashboard")
+    p = sub.add_parser("exclude")
+    p.add_argument("who")
+    p.add_argument("--note", default="")
     a = ap.parse_args(argv)
 
     cfg = core.load_cfg()
@@ -70,6 +76,7 @@ def main(argv=None):
                 print(f"  queue: out/queue_{d}.json   results to fill: inbox/results_{d}.csv")
         if a.cmd == "daily":
             print("scoreboard:", report.html_scoreboard(db, cfg))
+            print("dashboard:", dashboard.build(db, cfg))
     elif a.cmd == "sync":
         print(_sync_text(core.sync(db, cfg)))
     elif a.cmd == "report":
@@ -79,6 +86,13 @@ def main(argv=None):
     elif a.cmd == "mark":
         ok = core.mark(db, cfg, a.url, a.stage, a.track, a.lang)
         print("updated" if ok else "not found")
+    elif a.cmd == "dashboard":
+        print("dashboard:", dashboard.build(db, cfg))
+        d, n = dashboard.export_csv(db)
+        print(f"{n} contacts -> {d}")
+    elif a.cmd == "exclude":
+        hit = core.exclude(db, a.who, a.note)
+        print(f"{len(hit)} contact(s) set to do-not-contact: " + ", ".join(hit) if hit else "no contact matched; kept on the list for future imports")
     elif a.cmd == "export-crm":
         p, n = report.export_crm(db)
         print(f"{n} contacts -> {p}")

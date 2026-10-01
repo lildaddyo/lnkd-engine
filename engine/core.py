@@ -8,12 +8,14 @@ import random
 import shutil
 from datetime import date, datetime, timedelta, timezone
 
-from . import classify, ingest, store
+from . import classify, ingest, segments, store
 from .util import first_name, from_iso, full_url, is_cyrillic, iso, norm_url
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ACTIVE_STAGES = ("REPLIED", "CONVERSATION", "MEETING", "PROPOSAL", "WON", "LOST", "DNC", "NOT_CONNECTED")
 AUTO_OPTIONS = ["ICP", "BUILDER", "PARTNER", "NETWORK", "STUDENT"]
+SEGMENT_TRACK = {"INVESTOR": "INVESTOR", "AI_BUILDER": "AIPEER"}  # segment -> dedicated outreach track
+SEGMENT_OVERRIDES = ("ICP", "BUILDER", "NETWORK", "AUTO")  # only cold-ish tracks yield to a segment track
 
 TOPIC_TXT = {
     "bg": {"training": "за VR обученията", "event": "за събитието", "ar": "за AR проекта", "vr": "за VR проекта",
@@ -69,6 +71,7 @@ def do_import(db, cfg, export_path, connections=None, crm=None):
                 db.execute("UPDATE contacts SET stage='NOT_CONNECTED' WHERE key=? AND stage='NEW'", (key,))
             else:
                 db.execute("UPDATE contacts SET stage='NEW' WHERE key=? AND stage='NOT_CONNECTED'", (key,))
+    apply_exclusions(db)
     rescore(db, cfg)
     db.commit()
     return len(people), n_new
@@ -109,10 +112,18 @@ def rescore(db, cfg, keys=None):
         c = _contact(row)
         s = classify.score(c, cfg)
         track = "DNC" if c["stage"] == "DNC" else s["track"]
+        c.update(vertical=s["vertical"], s_rel=s["s_rel"], s_intent=s["s_intent"], s_timing=s["s_timing"])
+        g = segments.segment(c)
+        nxt = s["next_action"]
+        new = SEGMENT_TRACK.get(g["segment"])
+        if new and not c.get("manual_track") and track in SEGMENT_OVERRIDES:
+            track, nxt = new, classify.NEXT_ACTION[new]  # never overrides WARM/REACTIVATE/PARTNER/STUDENT/DNC
         db.execute("UPDATE contacts SET track=?, score=?, grade=?, s_rel=?, s_intent=?, s_fit=?, s_timing=?, fit_known=?, "
-                   "seniority=?, function=?, vertical=?, next_action=?, reasons=?, lang=? WHERE key=?",
+                   "seniority=?, function=?, vertical=?, next_action=?, reasons=?, lang=?, "
+                   "segment=?, stream=?, stream2=?, offer=?, opp_score=?, opp_tier=?, value=? WHERE key=?",
                    (track, s["score"], s["grade"], s["s_rel"], s["s_intent"], s["s_fit"], s["s_timing"], s["fit_known"],
-                    s["seniority"], s["function"], s["vertical"], s["next_action"], s["reasons"], pick_lang(c), c["key"]))
+                    s["seniority"], s["function"], s["vertical"], nxt, s["reasons"], pick_lang(c),
+                    g["segment"], g["stream"], g["stream2"], g["offer"], g["opp_score"], g["opp_tier"], g["value"], c["key"]))
 
 
 # ------------------------------------------------------------------ render
@@ -423,6 +434,49 @@ def apply_reply(db, cfg, key, r, report):
                        (ref, nm, first_name(nm), json.dumps({"sources": ["referral"], "referred_by": key})))
         report["referrals"] += 1
     return ref
+
+
+# ------------------------------------------------------------------ never-contact list
+def exclusions_path():
+    return path("data", "never_contact.txt")
+
+
+def _exclusion_lines():
+    p = exclusions_path()
+    if not os.path.exists(p):
+        return []
+    with open(p, encoding="utf-8") as fh:
+        return fh.read().splitlines()
+
+
+def exclude(db, who, note=""):
+    """Add a name or profile URL to data/never_contact.txt (git-ignored) and apply it now. Returns matched keys."""
+    p = exclusions_path()
+    os.makedirs(os.path.dirname(p), exist_ok=True)
+    line = who.strip() + (f"  # {note}" if note else "")
+    existing = _exclusion_lines()
+    if not any(e.split("#")[0].strip().lower() == who.strip().lower() for e in existing):
+        with open(p, "a", encoding="utf-8", newline="") as fh:
+            fh.write(line + "\n")
+    return apply_exclusions(db)
+
+
+def apply_exclusions(db):
+    """Friends, family and anyone else who must never get outreach: stage DNC, track DNC. Survives re-imports."""
+    hit = []
+    for raw in _exclusion_lines():
+        t = raw.split("#")[0].strip()
+        if not t:
+            continue
+        if "linkedin.com" in t.lower() or "/" in t:
+            rows = db.execute("SELECT key FROM contacts WHERE key=?", (norm_url(t),)).fetchall()
+        else:
+            rows = db.execute("SELECT key FROM contacts WHERE lower(name)=?", (t.lower(),)).fetchall()
+        for r in rows:
+            db.execute("UPDATE contacts SET stage='DNC', track='DNC', next_due=NULL WHERE key=?", (r["key"],))
+            hit.append(r["key"])
+    db.commit()
+    return hit
 
 
 def mark(db, cfg, url, stage=None, track=None, lang=None):

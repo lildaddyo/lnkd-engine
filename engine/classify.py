@@ -77,7 +77,7 @@ RECRUITER_RX = any_re([r"recruit", r"рекрут", r"head ?hunter", r"talent ac
 TECH_IC_RX = any_re([r"developer", r"engineer", r"програмист", r"инженер", r"software", r"designer", r"дизайнер",
                      r"artist", r"3d", r"unity", r"unreal"])
 
-TRACKS = ["DNC", "REACTIVATE", "WARM", "ICP", "BUILDER", "PARTNER", "STUDENT", "NETWORK", "AUTO"]
+TRACKS = ["DNC", "REACTIVATE", "WARM", "ICP", "BUILDER", "PARTNER", "INVESTOR", "AIPEER", "STUDENT", "NETWORK", "AUTO"]
 
 NEXT_ACTION = {
     "REACTIVATE": "Reactivate: resume where you left off ({topic}), show what's new, then offer {offer}",
@@ -85,6 +85,8 @@ NEXT_ACTION = {
     "ICP": "Relevance-first cold open on {offer} with a {vertical} proof point; interest CTA",
     "BUILDER": "Founder track: AI-native build in weeks; ask what's stuck on their roadmap",
     "PARTNER": "Agency partner track: white-label XR/AI production, partner pricing, referral loop",
+    "INVESTOR": "Investor track: no pitch; ask whether XR / applied AI is in their thesis, offer a one-page overview, ask for an intro",
+    "AIPEER": "AI-builder peer track: swap notes, offer co-delivery or white-label capacity in both directions",
     "STUDENT": "Non-sales: BrainTube beta tester, talent pool / internships, campus referrals",
     "NETWORK": "Give-first reconnect, then a specific referral ask on touch 2 (referred leads are worth more)",
     "AUTO": "Unknown profile: Cowork reads the headline at send time and picks the track",
