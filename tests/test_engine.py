@@ -13,7 +13,7 @@ from datetime import date
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE))
 
-from engine import classify, core, store  # noqa: E402
+from engine import classify, core, dashboard, segments, store  # noqa: E402
 
 ME = "https://www.linkedin.com/in/me-test"
 
@@ -82,6 +82,7 @@ class EngineTest(unittest.TestCase):
 
     def tearDown(self):
         core.ROOT = self._root
+        self.db.close()  # Windows cannot delete an open sqlite file
         shutil.rmtree(self.tmp)
 
     def track(self, slug):
@@ -170,10 +171,89 @@ class EngineTest(unittest.TestCase):
 
     def test_templates_complete(self):
         t = self.cfg["templates"]
-        for tr in ("REACTIVATE", "WARM", "ICP", "BUILDER", "PARTNER", "STUDENT", "NETWORK"):
+        for tr in ("REACTIVATE", "WARM", "ICP", "BUILDER", "PARTNER", "INVESTOR", "AIPEER", "STUDENT", "NETWORK"):
             for lang in ("bg", "en"):
                 for n in ("1", "2", "3"):
                     self.assertIn("a", t[tr][lang][n], f"{tr}/{lang}/{n}")
+
+    def test_segments(self):
+        def seg(position, company="Acme", vertical=None, **kw):
+            return segments.segment({"position": position, "company": company, "vertical": vertical,
+                                     "features": kw.pop("features", {}), **kw})
+        self.assertEqual(seg("Managing Partner", "Sofia Angels Ventures")["segment"], "INVESTOR")
+        self.assertEqual(seg("HR Business Partner", "Galaxy Investment Group")["segment"], "INVESTOR_ORG_STAFF")
+        self.assertEqual(seg("Founder & CEO", "Fusara AI")["segment"], "AI_BUILDER")
+        self.assertEqual(seg("Head of Marketing", "DSK Bank", "banking")["segment"], "CORPORATE_BUYER")
+        self.assertEqual(seg("Founder", "Alpha Digital Agency")["segment"], "PARTNER_AGENCY")
+        self.assertEqual(seg("Chief Executive Officer", "Hyllbaz")["segment"], "SME_OWNER")
+        self.assertEqual(seg("", "")["segment"], "UNKNOWN")
+        self.assertEqual(seg("Student", "NBU")["segment"], "STUDENT_JUNIOR")
+        crm = seg("Brand Manager", "Sopharma", features={"crm": {"tier": "tier:past-buyer"}})
+        self.assertEqual((crm["segment"], crm["stream"]), ("CLIENT_PAST", "AICON"))
+        hr = seg("Head of HR", "Postbank", "banking", s_rel=20, s_intent=8)
+        self.assertEqual(hr["stream"], "VRX")
+        self.assertIn(hr["opp_tier"], ("P1", "P2"))
+
+    def test_segments_stored_and_exclusion_persists(self):
+        row = self.db.execute("SELECT segment, opp_tier FROM contacts WHERE key='linkedin.com/in/hana-hr'").fetchone()
+        self.assertIsNotNone(row["segment"])
+        self.assertIsNotNone(row["opp_tier"])
+        name = self.db.execute("SELECT name FROM contacts WHERE key='linkedin.com/in/hana-hr'").fetchone()[0]
+        hit = core.exclude(self.db, name, "friend")
+        self.assertEqual(hit, ["linkedin.com/in/hana-hr"])
+        core.do_import(self.db, self.cfg, self.zip)  # a re-import must not resurrect them
+        r = self.db.execute("SELECT stage, track FROM contacts WHERE key='linkedin.com/in/hana-hr'").fetchone()
+        self.assertEqual((r["stage"], r["track"]), ("DNC", "DNC"))
+        items, _ = core.plan(self.db, self.cfg, date(2026, 10, 7), cap_override=50, dry_run=True)
+        self.assertFalse([i for i in items if "hana-hr" in i["profile_url"]])
+
+    def _retitle(self, slug, position, company):
+        key = "linkedin.com/in/" + slug
+        self.db.execute("UPDATE contacts SET position=?, company=? WHERE key=?", (position, company, key))
+        core.rescore(self.db, self.cfg, [key])
+        return self.db.execute("SELECT track, segment, next_action FROM contacts WHERE key=?", (key,)).fetchone()
+
+    def test_segment_tracks(self):
+        r = self._retitle("tom-eng", "Managing Partner", "Sofia Angels Ventures")
+        self.assertEqual((r["segment"], r["track"]), ("INVESTOR", "INVESTOR"))
+        self.assertIn("Investor track", r["next_action"])
+        r = self._retitle("peter-founder", "Founder & CEO", "Fusara AI")
+        self.assertEqual((r["segment"], r["track"]), ("AI_BUILDER", "AIPEER"))
+        # warm / reactivation / DNC tracks are never overridden by a segment track
+        self.assertEqual(self._retitle("maria-ivanova", "Managing Partner", "Sofia Angels Ventures")["track"], "REACTIVATE")
+        self.assertEqual(self._retitle("no-thanks", "Managing Partner", "Sofia Angels Ventures")["track"], "DNC")
+        # and both new tracks render real messages
+        c = core._contact(self.db.execute("SELECT * FROM contacts WHERE key='linkedin.com/in/tom-eng'").fetchone())
+        for tr in ("INVESTOR", "AIPEER"):
+            for lang in ("bg", "en"):
+                for touch in (1, 2, 3):
+                    self.assertTrue(core.render(self.cfg, c, tr, touch, "a", lang), f"{tr}/{lang}/{touch}")
+
+    def test_crm_name_only_match_needs_company(self):
+        from engine import ingest
+        self.assertTrue(ingest._same_company("Postbank (Eurobank Bulgaria AD)", "Postbank"))
+        self.assertFalse(ingest._same_company("Wolt", "Novartis"))
+        self.assertFalse(ingest._same_company("", "Novartis"))
+        name = self.db.execute("SELECT name FROM contacts WHERE key='linkedin.com/in/tom-eng'").fetchone()[0]
+        co = self.db.execute("SELECT company FROM contacts WHERE key='linkedin.com/in/tom-eng'").fetchone()[0] or "Acme"
+        crm = os.path.join(self.tmp, "data", "crm.csv")
+        for company, expect_crm in (("Totally Different Corp", False), (co, True)):
+            with open(crm, "w", encoding="utf-8", newline="") as fh:
+                fh.write("name,company,role,tier,vertical,linkedin_url\n")
+                fh.write(f'"{name}","{company}",Boss,tier:past-buyer,pharma,\n')
+            core.do_import(self.db, self.cfg, self.zip, None, crm)
+            f = json.loads(self.db.execute("SELECT features FROM contacts WHERE key='linkedin.com/in/tom-eng'").fetchone()[0])
+            self.assertEqual(bool(f.get("crm")), expect_crm, company)
+            self.assertEqual(bool(f.get("crm_candidates")), not expect_crm, company)
+
+    def test_dashboard_builds_with_empty_campaign(self):
+        html = dashboard.build(self.db)
+        self.assertTrue(os.path.exists(html))
+        data = dashboard.analytics(self.db)
+        self.assertTrue(data["campaign"]["empty"])
+        self.assertGreater(data["total"], 0)
+        d, n = dashboard.export_csv(self.db)
+        self.assertTrue(os.path.exists(os.path.join(d, "all_contacts_scored.csv")))
 
 
 if __name__ == "__main__":

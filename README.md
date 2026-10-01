@@ -32,6 +32,14 @@ Then set up the Cowork scheduled task described in [COWORK.md](COWORK.md). Its d
 | `report [--html] [--json]` | Track × grade table, outreach funnel, and A/B results. `--html` writes `out/scoreboard.html`. |
 | `mark <url> --stage MEETING \| --track ICP \| --lang en` | Manual override for one person. |
 | `export-crm` | `out/crm_push.csv`: conversations, meetings and A-grade prospects for VRX CRM import. |
+| `dashboard` | `out/dashboard.html` (overview, pipeline model, top targets, accounts, live campaign analytics, data quality) plus `out/opportunities/*.csv` (all contacts, target companies, one file per segment). `daily` rebuilds the dashboard too. |
+| `exclude <name \| url> [--note why]` | Never contact (friends, family). Saved in `data/never_contact.txt` and re-applied on every import. |
+
+### Opportunity segments
+
+Tracks decide *how* to approach someone; segments (`engine/segments.py`) decide *what to sell*. Every contact gets a segment (corporate buyer, agency/partner, investor, AI builder, SME owner, past client from the CRM and so on), a primary revenue stream (VR Express, AI Consultancy, AI Builds, Partnerships), a suggested first offer and an opportunity tier P1 to P4. They are keyword rules on title and company because the export has no headlines, so check the Data quality tab. Two segments get their own outreach track and templates: `INVESTOR` and `AI_BUILDER` (track `AIPEER`). They only take over from the cold tracks (ICP, BUILDER, NETWORK, AUTO); WARM, REACTIVATE, PARTNER, STUDENT and DNC are never overridden. All other segments only feed the dashboard.
+
+CRM warm list: a CRM row is matched by LinkedIn URL, or by name when exactly one person with that name works at the CRM's company. Weaker name-only matches are not treated as past clients; they are listed in `out/opportunities/crm_review.csv` and on the dashboard's Data quality tab. To confirm one, paste the LinkedIn URL into that row of `data/crm_warm.csv` and re-import.
 
 ## Files
 

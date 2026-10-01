@@ -63,9 +63,11 @@
     "_why": "Share of NEW first-touches per day. Unused share rolls over to the next track in this order.",
     "REACTIVATE": 0.1,
     "WARM": 0.15,
-    "ICP": 0.3,
-    "BUILDER": 0.12,
+    "ICP": 0.25,
+    "BUILDER": 0.09,
     "PARTNER": 0.08,
+    "INVESTOR": 0.03,
+    "AIPEER": 0.05,
     "AUTO": 0.1,
     "NETWORK": 0.05,
     "STUDENT": 0.1

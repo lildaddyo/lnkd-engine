@@ -55,8 +55,10 @@ Baseline on the Sept 2026 export (11,438 connections plus 734 non-connected peop
 | **ICP** | Decision-level HR, L&D, marketing, brand, events or innovation; or C-level at pharma, banking, FMCG, telco or retail | Relevance-first cold open with a vertical proof point and an interest CTA | VR onboarding, AR/3D, AI digital humans |
 | **BUILDER** | Founders, owners, startup CEOs | "What's stuck on your roadmap?" | AI-native product in weeks |
 | **PARTNER** | Agencies, studios, freelancers | White-label partnership plus a referral loop | Partner pricing, invisible delivery |
+| **INVESTOR** | Investors, angels, VC/fund partners and directors (segment rule, only cold-ish contacts) | No pitch: is XR / applied AI in their thesis? One-page overview, ask for an intro | Portfolio and track record |
+| **AIPEER** | Founders and leads at AI, agent or automation companies | Builder to builder: swap notes, co-delivery or white-label in both directions | AI builds, XR capacity |
 | **STUDENT / early-career** | Students, interns, trainees, juniors, assistants | **Not sales.** Beta testers, talent pool, campus referrals | BrainTube early access, internships |
-| **NETWORK** | Everyone else (engineers, recruiters, investors, public sector...) | Give-first reconnect → specific referral ask | Referrals to the above |
+| **NETWORK** | Everyone else (engineers, recruiters, public sector...) | Give-first reconnect → specific referral ask | Referrals to the above |
 | **DNC** | Asked to stop, spam folder, family | Never contacted | — |
 
 Why a separate student track: students and juniors are a poor buyer fit today, but a cheap, high-goodwill audience for **product feedback (BrainTube)**, **hiring**, and **word of mouth**. Asking for advice or feedback is well received and raises perceived competence (**[E]** Brooks, Gino & Schweitzer 2015, *Management Science*). Today's juniors are also tomorrow's managers, since they carry the tie forward (§1).

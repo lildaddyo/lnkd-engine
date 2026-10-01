@@ -135,6 +135,58 @@
       }
     }
   },
+  "INVESTOR": {
+    "bg": {
+      "1": {
+        "a": "Здравейте, {first_name}! {hook}Ръководя VR Express и през последните месеци пуснах над 8 AI-native продукта. Искам да съм ви на радара за XR и приложен AI. Интересно ли ви е да се запознаем накратко?",
+        "b": "Здравейте, {first_name}! {hook}Следите ли компании в XR или приложен AI, или това е извън вашия фокус? Питам, защото строим в тази област и търся правилните хора за разговор."
+      },
+      "2": {
+        "a": "{first_name}, за контекст: {proof}. Ако е полезно, мога да ви пратя едностраничен преглед какво правим и накъде вървим. Без презентация, освен ако не поискате."
+      },
+      "3": {
+        "a": "Последно от мен, {first_name}. Ако XR или приложен AI се появят във вашето портфолио или deal flow, с радост ще помогна или ще се запознаем. Благодаря за времето."
+      }
+    },
+    "en": {
+      "1": {
+        "a": "Hi {first_name}! {hook}I run VR Express and have shipped 8+ AI-native products in recent months. I'd like to be on your radar for XR and applied AI. Open to a short intro?",
+        "b": "Hi {first_name}! {hook}Do you look at XR or applied-AI companies, or is that outside your focus? Asking because we build in this space and I'm looking for the right people to talk to."
+      },
+      "2": {
+        "a": "{first_name}, for context: {proof}. If it helps, I can send a one-page overview of what we build and where we're heading. No deck unless you ask."
+      },
+      "3": {
+        "a": "Last note from me, {first_name}. If XR or applied AI ever comes up in your portfolio or deal flow, I'd be glad to help or to be introduced. Thanks for your time."
+      }
+    }
+  },
+  "AIPEER": {
+    "bg": {
+      "1": {
+        "a": "Здрасти, {first_name}! {hook}Строя AI агенти и XR продукти във VR Express, над 8 AI-native продукта са на живо. Винаги ми е интересно какво правят другите билдъри. Върху какво работиш в момента?",
+        "b": "Здрасти, {first_name}! {hook}От билдър към билдър: правим AI агенти, дигитални персони и XR и понякога имаме повече търсене от капацитет. Интересно ли ти е да си разменим бележки или да изпълним проект заедно?"
+      },
+      "2": {
+        "a": "{first_name}, една конкретна идея: когато клиент ти поиска нещо извън стека ти, мога да направя AI или XR частта под твоето име, и обратното. Струва ли си 15 минути разговор?"
+      },
+      "3": {
+        "a": "Последно от мен, {first_name}. Ако някога искаш да сравним бележки или да ми прехвърлиш проект (или обратното), аз съм насреща."
+      }
+    },
+    "en": {
+      "1": {
+        "a": "Hi {first_name}! {hook}I build AI agents and XR products at VR Express, 8+ AI-native products live. Always curious what other builders are shipping. What are you working on right now?",
+        "b": "Hi {first_name}! {hook}Builder to builder: we do AI agents, digital humans and XR, and sometimes have more demand than capacity. Would swapping notes, or even co-delivering a project, be interesting?"
+      },
+      "2": {
+        "a": "{first_name}, one concrete idea: when a client needs something outside your stack, I can deliver the AI or XR part under your name, and the reverse. Worth a 15-minute chat?"
+      },
+      "3": {
+        "a": "Last one from me, {first_name}. If you ever want to compare notes or pass a project my way (or the other way round), I'm in."
+      }
+    }
+  },
   "STUDENT": {
     "bg": {
       "1": {
