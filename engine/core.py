@@ -189,7 +189,8 @@ def daily_cap(cfg, idx, rng):
     return max(1, int(cap * (1 + rng.uniform(-v["jitter"], v["jitter"]))))
 
 
-def plan(db, cfg, d, force=False, cap_override=None):
+def plan(db, cfg, d, force=False, cap_override=None, dry_run=False):
+    """dry_run: build and write out/dryrun_queue_<date>.* but change nothing in engine state."""
     if d.weekday() not in cfg["volume"]["send_weekdays"] and not force:
         return None, f"{d} is not a send day (config.volume.send_weekdays). Use --force to override."
     rng = random.Random(d.toordinal())
@@ -271,14 +272,18 @@ def plan(db, cfg, d, force=False, cap_override=None):
                    (item["touch_id"], c["key"], ds, touch, tr, lang, item["variant"],
                     item["message"] or json.dumps(item.get("options"), ensure_ascii=False)))
         out.append(item)
+    if dry_run:
+        db.rollback()  # no touches, no expiries, no ramp start date
+        _write_queue(d, out, cap, idx, prefix="dryrun_queue", results=False)
+        return out, f"DRY RUN: {len(out)} messages would be planned for {ds} (cap {cap}); nothing saved"
     db.commit()
     _write_queue(d, out, cap, idx)
     return out, f"{len(out)} messages planned for {ds} (send-day #{idx}, cap {cap})"
 
 
-def _write_queue(d, items, cap, idx):
+def _write_queue(d, items, cap, idx, prefix="queue", results=True):
     os.makedirs(path("out"), exist_ok=True)
-    base = path("out", f"queue_{d.isoformat()}")
+    base = path("out", f"{prefix}_{d.isoformat()}")
     with open(base + ".json", "w", encoding="utf-8") as fh:
         json.dump({"date": d.isoformat(), "send_day": idx, "cap": cap, "items": items}, fh, ensure_ascii=False, indent=1)
     with open(base + ".csv", "w", encoding="utf-8-sig", newline="") as fh:
@@ -287,9 +292,15 @@ def _write_queue(d, items, cap, idx):
         for it in items:
             w.writerow([it["touch_id"], it["name"], it["profile_url"], it["track"], it["touch"], it["lang"],
                         it["variant"], it["grade"], it["score"], it["message"] or "(AUTO: pick from options)"])
-    # results template Cowork fills in
+    if not results:
+        return
+    # results template Cowork fills in; rewritten on a re-plan unless Cowork already filled rows
     res = path("inbox", f"results_{d.isoformat()}.csv")
-    if not os.path.exists(res):
+    if os.path.exists(res):
+        with open(res, encoding="utf-8-sig") as fh:
+            if any((r.get("status") or "").strip() for r in csv.DictReader(fh)):
+                return
+    if True:
         os.makedirs(path("inbox"), exist_ok=True)
         with open(res, "w", encoding="utf-8-sig", newline="") as fh:
             w = csv.writer(fh)

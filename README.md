@@ -26,7 +26,7 @@ Then set up the Cowork scheduled task described in [COWORK.md](COWORK.md). Its d
 | Command | What it does |
 |---|---|
 | `import [--export zip\|folder] [--connections csv] [--crm csv]` | Parses messages, invitations, endorsements, follows, Connections.csv and the CRM warm list, then scores everyone. Safe to re-run monthly because it never resets the funnel. |
-| `plan [--date D] [--cap N] [--force]` | Builds the day's queue: due follow-ups first, then new first touches by `track_mix`, with A/B variants chosen by Thompson sampling. Writes `out/queue_D.json` and `.csv`, and `inbox/results_D.csv` for Cowork to fill. |
+| `plan [--date D] [--cap N] [--force] [--dry-run]` | Builds the day's queue: due follow-ups first, then new first touches by `track_mix`, with A/B variants chosen by Thompson sampling. Writes `out/queue_D.json` and `.csv`, and `inbox/results_D.csv` for Cowork to fill. `--dry-run` writes only `out/dryrun_queue_D.*` and saves nothing. |
 | `sync` | Reads `inbox/results_*.csv` (sent or skipped, plus profile data Cowork saw) and `inbox/replies_*.csv` (sentiment, next step, referrals), and moves contacts through the funnel. |
 | `daily` | `sync` + `plan` + scoreboard. This is what Cowork runs. |
 | `report [--html] [--json]` | Track × grade table, outreach funnel, and A/B results. `--html` writes `out/scoreboard.html`. |

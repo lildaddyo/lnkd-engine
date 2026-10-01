@@ -145,6 +145,15 @@ class EngineTest(unittest.TestCase):
         self.assertIn("referred_by", json.loads(nova[0]))
         self.assertGreaterEqual(nova[1], 10)
 
+    def test_dry_run_saves_nothing(self):
+        d = date(2026, 10, 5)
+        items, msg = core.plan(self.db, self.cfg, d, cap_override=5, dry_run=True)
+        self.assertTrue(items)
+        self.assertEqual(self.db.execute("SELECT COUNT(*) FROM touches").fetchone()[0], 0)
+        self.assertIsNone(store.meta_get(self.db, "start_date"))
+        self.assertFalse(os.path.exists(os.path.join(self.tmp, "inbox", f"results_{d}.csv")))
+        self.assertTrue(os.path.exists(os.path.join(self.tmp, "out", f"dryrun_queue_{d}.csv")))
+
     def test_thompson_prefers_winner(self):
         import random
         stats = {("ICP", "en", "a"): [100, 2], ("ICP", "en", "b"): [100, 20]}

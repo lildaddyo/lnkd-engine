@@ -1,7 +1,7 @@
 """CLI: python -m engine <command>
 
   import   --export <zip|folder> [--connections Connections.csv] [--crm data/crm_warm.csv]
-  plan     [--date YYYY-MM-DD] [--force] [--cap N]     -> out/queue_<date>.json|csv + inbox/results_<date>.csv
+  plan     [--date YYYY-MM-DD] [--force] [--cap N] [--dry-run]     -> out/queue_<date>.json|csv + inbox/results_<date>.csv
   sync                                                  <- inbox/results_*.csv, inbox/replies_*.csv
   report   [--html] [--json]                            -> funnel + out/scoreboard.html
   mark     <profile_url> [--stage S] [--track T] [--lang bg|en]
@@ -28,6 +28,7 @@ def main(argv=None):
         p.add_argument("--date", default=None)
         p.add_argument("--force", action="store_true")
         p.add_argument("--cap", type=int, default=None)
+        p.add_argument("--dry-run", action="store_true", help="preview only; writes out/dryrun_queue_*, saves nothing")
     sub.add_parser("sync")
     p = sub.add_parser("report")
     p.add_argument("--html", action="store_true")
@@ -56,14 +57,17 @@ def main(argv=None):
         d = date.fromisoformat(a.date) if a.date else date.today()
         if a.cmd == "daily":
             print(_sync_text(core.sync(db, cfg)))
-        items, msg = core.plan(db, cfg, d, force=a.force, cap_override=a.cap)
+        items, msg = core.plan(db, cfg, d, force=a.force, cap_override=a.cap, dry_run=a.dry_run and a.cmd == "plan")
         print(msg)
         if items is not None:
             by = {}
             for it in items:
                 by[(it["track"], it["touch"])] = by.get((it["track"], it["touch"]), 0) + 1
             print("  " + ", ".join(f"{t}#{n}={c}" for (t, n), c in sorted(by.items())))
-            print(f"  queue: out/queue_{d}.json   results to fill: inbox/results_{d}.csv")
+            if a.dry_run:
+                print(f"  preview: out/dryrun_queue_{d}.csv (nothing saved)")
+            else:
+                print(f"  queue: out/queue_{d}.json   results to fill: inbox/results_{d}.csv")
         if a.cmd == "daily":
             print("scoreboard:", report.html_scoreboard(db, cfg))
     elif a.cmd == "sync":
