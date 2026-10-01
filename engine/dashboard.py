@@ -107,6 +107,19 @@ def crm_review(db):
     return out
 
 
+CONTACTED = ("IN_SEQUENCE", "REPLIED", "CONVERSATION", "MEETING", "PROPOSAL", "WON", "LOST", "NURTURE")
+REPLIED = ("REPLIED", "CONVERSATION", "MEETING", "PROPOSAL", "WON")
+MEETING = ("MEETING", "PROPOSAL", "WON")
+
+
+def funnel(C):
+    """Stage counts from scored contact to won. Later stages come from the engine's funnel stages, so they fill in by themselves."""
+    p12 = [c for c in C if c["tier"] in ("P1", "P2")]
+    n = lambda stages: sum(1 for c in C if c["stage"] in stages)
+    return {"scored": len(C), "priority": len(p12), "reachable": sum(1 for c in p12 if c["stage"] != "NOT_CONNECTED"),
+            "contacted": n(CONTACTED), "replied": n(REPLIED), "meeting": n(MEETING), "won": n(("WON",))}
+
+
 def analytics(db):
     C = contacts(db)
     p12 = [c for c in C if c["tier"] in ("P1", "P2")]
@@ -126,7 +139,7 @@ def analytics(db):
         "campaign": campaign(db),
         "reactivate": [c for c in p12 if c["warmth"].startswith("dormant") and c["two_way_threads"]][:60],
         "top": p12[:TOP_N], "companies": companies(C)[:200], "streams": segments.STREAMS,
-        "crm_review": crm_review(db), "labels": segments.SEGMENT_LABELS, "crm_clients": sum(1 for c in C if c["segment"] == "CLIENT_PAST"),
+        "funnel": funnel(C), "crm_review": crm_review(db), "labels": segments.SEGMENT_LABELS, "crm_clients": sum(1 for c in C if c["segment"] == "CLIENT_PAST"),
     }
 
 

@@ -252,6 +252,12 @@ class EngineTest(unittest.TestCase):
         data = dashboard.analytics(self.db)
         self.assertTrue(data["campaign"]["empty"])
         self.assertGreater(data["total"], 0)
+        f = data["funnel"]
+        self.assertEqual((f["contacted"], f["replied"], f["meeting"], f["won"]), (0, 0, 0, 0))
+        self.assertGreaterEqual(f["scored"], f["priority"])
+        core.mark(self.db, self.cfg, "https://www.linkedin.com/in/hana-hr", stage="MEETING")
+        f = dashboard.analytics(self.db)["funnel"]
+        self.assertEqual((f["contacted"], f["replied"], f["meeting"], f["won"]), (1, 1, 1, 0))
         d, n = dashboard.export_csv(self.db)
         self.assertTrue(os.path.exists(os.path.join(d, "all_contacts_scored.csv")))
 

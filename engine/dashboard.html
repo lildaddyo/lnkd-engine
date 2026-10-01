@@ -19,8 +19,16 @@ table{width:100%;border-collapse:collapse}th,td{padding:6px 8px;border-bottom:1p
 .f{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 10px}select,input{padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)}
 .asm label{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:6px 0}.asm input{width:90px;text-align:right}
 .big{font-size:30px;font-weight:700}
+#funnel{padding:14px 24px 0}.fun{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.fun h3{margin:0 0 2px;font-size:13px;color:var(--mut);font-weight:600;text-transform:uppercase;letter-spacing:.04em}.fun .hint{color:var(--mut);font-size:12px;margin-bottom:10px}
+.fr{display:grid;grid-template-columns:130px 1fr 150px;align-items:center;gap:10px;margin:4px 0}.fr .nm{font-size:13px}.fr .nm small{display:block;color:var(--mut);font-size:11px}
+.fr .tr{position:relative;height:30px}.fr .gh,.fr .ac{position:absolute;top:0;bottom:0;left:50%;transform:translateX(-50%);border-radius:6px;min-width:3px}
+.fr .gh{border:1.5px dashed var(--acc);opacity:.7}.fr .ac{background:var(--acc)}.fr .vl{font-size:13px;text-align:right}.fr .vl b{font-size:16px}.fr .vl small{display:block;color:var(--mut);font-size:11px}
+.fk{display:flex;gap:16px;color:var(--mut);font-size:12px;margin-top:8px;align-items:center;flex-wrap:wrap}.fk i{display:inline-block;width:14px;height:10px;border-radius:3px;margin-right:5px;vertical-align:middle}
+@media (max-width:640px){.fr{grid-template-columns:90px 1fr 100px}}
 </style></head><body>
 <header><div><h1>LinkedIn Engine Dashboard</h1><div class="sub" id="sub"></div></div><div class="sub">Private. Local file. Rebuild: py -m engine dashboard</div></header>
+<div id="funnel"></div>
 <nav id="nav"></nav>
 <main>
 <section id="s_overview"></section><section id="s_pipe"></section><section id="s_targets"></section><section id="s_accounts"></section><section id="s_camp"></section><section id="s_quality"></section>
@@ -58,7 +66,22 @@ document.getElementById('s_pipe').innerHTML=h;
 function calc(){const g=id=>+document.getElementById(id).value||0;const rr=g('a_rr')/100,mt=g('a_mt')/100,wn=g('a_wn')/100,reach=g('a_reach')/100;let tot=0,rows='';let T=0,R=0,M=0,W=0;
  for(const s of Object.keys(defs)){const n=((A.stream_tier[s].P1||0)+(A.stream_tier[s].P2||0))*reach;const rep=n*rr,mee=rep*mt,won=mee*wn,rev=won*g('d_'+s);T+=n;R+=rep;M+=mee;W+=won;tot+=rev;rows+='<tr><td>'+ST[s]+'</td><td>'+n0(Math.round(n))+'</td><td>'+rep.toFixed(0)+'</td><td>'+mee.toFixed(1)+'</td><td>'+won.toFixed(1)+'</td><td><b>'+n0(Math.round(rev))+'</b></td></tr>'}
  document.getElementById('pm').innerHTML='<div class="big">EUR '+n0(Math.round(tot))+'</div><div class="note">first-deal revenue if all assumptions hold</div><table><tr><th>Stream</th><th>Contacted</th><th>Replies</th><th>Meetings</th><th>Won</th><th>Revenue</th></tr>'+rows+'<tr><td><b>Total</b></td><td>'+n0(Math.round(T))+'</td><td>'+R.toFixed(0)+'</td><td>'+M.toFixed(1)+'</td><td>'+W.toFixed(1)+'</td><td><b>'+n0(Math.round(tot))+'</b></td></tr></table><div class="note">At the engine ramp (40 to 150 DMs/day) 965 targets take about 10 working days to reach.</div>'}
-document.querySelectorAll('#s_pipe input').forEach(i=>i.oninput=calc);calc()})();
+document.querySelectorAll('#s_pipe input').forEach(i=>i.oninput=()=>{calc();renderFunnel()});calc()})();
+
+// FUNNEL (top): solid = what has actually happened, dashed = projection at the assumptions on the Pipeline model tab
+function renderFunnel(){const F=A.funnel,c=A.campaign;
+ const g=(id,d)=>{const e=document.getElementById(id);return e&&e.value!==''?+e.value:d};
+ const rr=g('a_rr',8)/100,mt=g('a_mt',30)/100,wn=g('a_wn',20)/100,reach=g('a_reach',100)/100;
+ const pj=[F.scored,F.priority,F.reachable,Math.round(F.reachable*reach),Math.round(F.reachable*reach*rr),Math.round(F.reachable*reach*rr*mt),Math.round(F.reachable*reach*rr*mt*wn)];
+ const ac=[F.scored,F.priority,F.reachable,F.contacted,F.replied,F.meeting,F.won];
+ const nm=[['Contacts scored','after exclusions'],['Priority P1 + P2','worth working first'],['Reachable','1st-degree, can be messaged'],['Contacted','at least one DM sent'],['Replied','any reply'],['Meeting','meeting booked or later'],['Won','closed']];
+ const mx=Math.max(1,F.scored),w=v=>Math.max(v>0?1.2:0,100*Math.sqrt(v/mx));
+ let h='<div class="fun"><h3>Funnel at a glance</h3><div class="hint">'+(c.empty?'Campaign has not started: solid bars are the real starting position, dashed outlines are the projection at your assumed rates.':'Solid bars are actual counts; dashed outlines are the projection at your assumed rates.')+' Widths use a square-root scale so the small stages stay visible; the numbers are exact.</div>';
+ nm.forEach((n,i)=>{const prev=i?ac[i-1]:0,conv=i>1&&prev?(' · '+(100*ac[i]/prev).toFixed(ac[i]/prev<.1?1:0)+'% of previous'):'';
+  h+='<div class="fr"><div class="nm">'+n[0]+'<small>'+n[1]+'</small></div><div class="tr">'+(i>=3?'<div class="gh" style="width:'+w(pj[i])+'%"></div>':'')+'<div class="ac" style="width:'+w(ac[i])+'%"></div></div><div class="vl"><b>'+n0(ac[i])+'</b>'+(i>=3?'<small>projected '+n0(pj[i])+'</small>':'<small>'+(i===1?(100*ac[i]/Math.max(1,F.scored)).toFixed(1)+'% of all':i===2?(100*ac[i]/Math.max(1,F.priority)).toFixed(0)+'% of priority':'')+'</small>')+'</div></div>'});
+ h+='<div class="fk"><span><i style="background:var(--acc)"></i>actual</span><span><i style="border:1.5px dashed var(--acc)"></i>projected at '+(rr*100).toFixed(0)+'% reply, '+(mt*100).toFixed(0)+'% to meeting, '+(wn*100).toFixed(0)+'% to won</span><span>Rates are placeholders. Edit them on the Pipeline model tab.</span></div></div>';
+ document.getElementById('funnel').innerHTML=h}
+renderFunnel();
 
 // TARGETS
 (function(){let h='<div class="f"><input id="tq" placeholder="Search name, company, position"><select id="tseg"><option value="">All segments</option>'+Object.entries(SEG).map(e=>'<option value="'+e[0]+'">'+e[1]+'</option>').join('')+'</select><select id="tst"><option value="">All streams</option>'+Object.entries(ST).filter(e=>e[0]!=='-').map(e=>'<option value="'+e[0]+'">'+e[1]+'</option>').join('')+'</select><select id="ttier"><option value="">P1 + P2</option><option>P1</option><option>P2</option></select></div><div class="wrapt"><table id="tt"></table></div><div class="note" id="tn"></div>';
